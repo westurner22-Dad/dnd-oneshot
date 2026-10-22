@@ -1,0 +1,1101 @@
+{
+  "title": "The Lantern of Larkhollow",
+  "start": "tavern",
+  "pregens": [
+    {
+      "name": "The Fighter",
+      "class": "fighter",
+      "hp": 12,
+      "ac": 18,
+      "str": 16,
+      "dex": 10,
+      "con": 14,
+      "int": 10,
+      "wis": 12,
+      "cha": 10,
+      "skills": {
+        "athletics": 5,
+        "perception": 3
+      },
+      "attack": {
+        "name": "Sword",
+        "to_hit": 5,
+        "damage": "1d8+5"
+      },
+      "notes": "Human former caravan guard. Best move: swing your sword (+5, 1d8+5). Second Wind once per fight: heal 1d10+1. Everything else +0."
+    },
+    {
+      "name": "The Cleric",
+      "class": "cleric",
+      "hp": 12,
+      "ac": 18,
+      "str": 10,
+      "dex": 10,
+      "con": 14,
+      "int": 10,
+      "wis": 16,
+      "cha": 12,
+      "skills": {
+        "insight": 5,
+        "persuasion": 3
+      },
+      "attack": {
+        "name": "Sacred Flame",
+        "to_hit": 5,
+        "damage": "1d8"
+      },
+      "notes": "Dwarf priestess; sees in the dark, speaks Draconic. Best move: Heal, 3 uses, ally regains 1d8+3. Everything else +0."
+    },
+    {
+      "name": "The Rogue",
+      "class": "rogue",
+      "hp": 10,
+      "ac": 14,
+      "str": 10,
+      "dex": 16,
+      "con": 12,
+      "int": 10,
+      "wis": 12,
+      "cha": 14,
+      "skills": {
+        "stealth": 7,
+        "perception": 5,
+        "sleight of hand": 5,
+        "persuasion": 4,
+        "deception": 4
+      },
+      "attack": {
+        "name": "Sneaky shot",
+        "to_hit": 5,
+        "damage": "1d6+3 (+1d6 if a friend is next to the target)"
+      },
+      "notes": "Halfling. Best move: sneaky shot. Everything else +0."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "tavern",
+      "title": "The Tavern",
+      "text": "Rain taps on the windows of the Bramble & Barrel, the coziest tavern in Larkhollow. Above the fireplace there's an empty iron hook. Marigold Fenn cries, \"Friends, somebody has stolen the Starlantern!\" She'll pay 60 gold and gives you 2 healing potions and a basket of meat pies.",
+      "options": [
+        {
+          "label": "Talk: ask Marigold for more gold",
+          "roll": {
+            "skill": "persuasion",
+            "dc": 12
+          },
+          "success": {
+            "text": "She offers 75 gold! She hugs you and points at the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 75
+              }
+            ]
+          },
+          "fail": {
+            "text": "Marigold hugs you anyway and points at the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 60
+              }
+            ]
+          }
+        },
+        {
+          "label": "Clever: look at the back window right away",
+          "roll": null,
+          "success": {
+            "text": "You hurry to the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 60
+              }
+            ]
+          },
+          "fail": {
+            "text": "You hurry to the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 60
+              }
+            ]
+          }
+        },
+        {
+          "label": "Fight: arm-wrestle Big Dunstan the blacksmith",
+          "roll": {
+            "skill": "athletics",
+            "dc": 12
+          },
+          "success": {
+            "text": "The whole tavern cheers, and Marigold adds a third potion! She points at the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 60
+              },
+              {
+                "type": "flag",
+                "key": "potions",
+                "value": 1
+              }
+            ]
+          },
+          "fail": {
+            "text": "Dunstan wins, but Marigold hugs you and points at the back window.",
+            "next_scene_id": "clues",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "reward_gold",
+                "value": 60
+              }
+            ]
+          }
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "flag",
+          "key": "potions",
+          "value": 2
+        },
+        {
+          "type": "flag",
+          "key": "pies",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "clues",
+      "title": "Clues",
+      "text": "The clues all point to Hammerdeep Mine on Millstone Hill. Which clue do you chase?",
+      "options": [
+        {
+          "label": "Clever: study the back window",
+          "roll": {
+            "skill": "perception",
+            "dc": 10
+          },
+          "success": {
+            "text": "Tiny three-toed footprints and a copper scale. Kobolds! The red mud only comes from Millstone Hill.",
+            "next_scene_id": "road",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "clue_window",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "Tiny three-toed muddy footprints and a shiny copper scale.",
+            "next_scene_id": "road",
+            "effects": []
+          }
+        },
+        {
+          "label": "Talk: visit Tobias the candlemaker",
+          "roll": {
+            "skill": "insight",
+            "dc": 10
+          },
+          "success": {
+            "text": "A slate drawing: six eggs in a ring of candles. \"They're not threatening anyone. Their eggs are cold.\" Tobias gives you a box of candles.",
+            "next_scene_id": "road",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "candles",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "His candles keep vanishing; the thieves left a slate drawing of six eggs ringed by candles. He gives you a box of candles anyway.",
+            "next_scene_id": "road",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "candles",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "label": "Talk: ask Old Wenna the goatherd",
+          "roll": {
+            "skill": "persuasion",
+            "dc": 10
+          },
+          "success": {
+            "text": "\"Little dragons carried a glowing star into the old dwarf mine. The dwarves left a magic warm-stone deep inside, behind a door with a sun on it.\"",
+            "next_scene_id": "road",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "clue_sun_door",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "\"Saw little dragons carrying a glowing star up the hill into the old dwarf mine. One waved!\"",
+            "next_scene_id": "road",
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "road",
+      "title": "The Goblin Toll",
+      "text": "At a rickety bridge, two goblins have hung a rope of tin cans by a sign: TOL BRIDJ. 5 SILVURS EECH. \"Halt, pay King Snag or else!\" \"Or else what, boss?\" whispers the round one, chewing an onion.",
+      "options": [
+        {
+          "label": "Talk: haggle with Snag",
+          "roll": {
+            "skill": "persuasion",
+            "dc": 10
+          },
+          "success": {
+            "text": "Snag lowers the toll to \"1 silver and a compliment\" and brags, \"We saw the lizard-folk go by with a shiny lamp!\"",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          },
+          "fail": {
+            "text": "You pay 15 silver. Snag brags, \"We saw the lizard-folk go by with a shiny lamp!\"",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          }
+        },
+        {
+          "label": "Clever: give Mudge a meat pie",
+          "roll": null,
+          "success": {
+            "text": "Mudge switches sides and Snag gives up. Across you go!",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          },
+          "fail": {
+            "text": "Mudge switches sides and Snag gives up. Across you go!",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          },
+          "requires": {
+            "flag": "pies"
+          }
+        },
+        {
+          "label": "Fight the goblins",
+          "roll": null,
+          "success": {
+            "text": "Swords out!",
+            "next_scene_id": "goblin_fight",
+            "effects": []
+          },
+          "fail": {
+            "text": "Swords out!",
+            "next_scene_id": "goblin_fight",
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "goblin_fight",
+      "title": "Fight: Snag and Mudge",
+      "text": "Snag waves a rusty sword. Mudge hides behind the sign. Each turn you move and do one thing. Roll to hit: if you beat their number, you score a hit.",
+      "options": [
+        {
+          "label": "Fight: attack Snag",
+          "roll": {
+            "skill": "athletics",
+            "dc": 14
+          },
+          "success": {
+            "text": "Hit! Snag goes down and Mudge cries \"TACTICAL RETREAT!\"",
+            "next_scene_id": "mine_gate",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "goblins_hit",
+                "value": 1
+              }
+            ]
+          },
+          "fail": {
+            "text": "Snag's rusty sword nicks you!",
+            "next_scene_id": "goblin_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": -5
+              }
+            ]
+          }
+        },
+        {
+          "label": "Fight: attack Mudge",
+          "roll": {
+            "skill": "athletics",
+            "dc": 11
+          },
+          "success": {
+            "text": "Mudge goes down and Snag gives up!",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          },
+          "fail": {
+            "text": "An onion bonks you!",
+            "next_scene_id": "goblin_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": -1
+              }
+            ]
+          }
+        },
+        {
+          "label": "Talk: glare at Mudge",
+          "roll": null,
+          "success": {
+            "text": "Mudge surrenders the moment you glare. Snag gives up too.",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          },
+          "fail": {
+            "text": "Mudge surrenders the moment you glare. Snag gives up too.",
+            "next_scene_id": "mine_gate",
+            "effects": []
+          }
+        }
+      ],
+      "combat": {
+        "enemies": [
+          {
+            "name": "Snag",
+            "ac": 14,
+            "hp": 7,
+            "attack": "+4, 1d6+2"
+          },
+          {
+            "name": "Mudge",
+            "ac": 11,
+            "hp": 4,
+            "attack": "+2, 1"
+          }
+        ],
+        "hits_to_win": 1,
+        "max_rounds": 3,
+        "on_win": "mine_gate"
+      }
+    },
+    {
+      "id": "mine_gate",
+      "title": "Pip at the Gate",
+      "text": "A wall of junk blocks the tunnel. Behind it, a cat-sized kobold in a teapot helmet waves a fork on a stick: \"Halt, I am Pip, Fiercest Guard, and VERY dangerous!\" Then he sneezes.",
+      "options": [
+        {
+          "label": "Talk: make friends with Pip (mention the eggs, or offer a pie or candle for an automatic win)",
+          "roll": {
+            "skill": "persuasion",
+            "dc": 10
+          },
+          "success": {
+            "text": "Pip opens the gate. \"Eggs are cold. Old warm-rock is locked behind the sun door.\" He joins you!",
+            "next_scene_id": "door",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "pip_friend",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "Pip opens the gate anyway, but stays wary.",
+            "next_scene_id": "door",
+            "effects": []
+          }
+        },
+        {
+          "label": "Clever: climb over the junk while Pip isn't looking",
+          "roll": {
+            "skill": "stealth",
+            "dc": 12
+          },
+          "success": {
+            "text": "You slip over the junk unseen.",
+            "next_scene_id": "door",
+            "effects": []
+          },
+          "fail": {
+            "text": "A wheel clatters, Pip rings the gong and runs. Grizzle will be expecting you.",
+            "next_scene_id": "door",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "grizzle_warned",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "label": "Fight: rush him",
+          "roll": null,
+          "success": {
+            "text": "Pip squeaks, rings the gong, and runs away. He won't help you.",
+            "next_scene_id": "door",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "grizzle_warned",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "Pip squeaks, rings the gong, and runs away. He won't help you.",
+            "next_scene_id": "door",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "grizzle_warned",
+                "value": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "door",
+      "title": "The Three-Lights Door",
+      "text": "A huge round stone door has one dial with three carvings: a Sun, a Moon, and a Star. Above it a golden sun shines on an anvil, with the words: \"The forge wakes with the day.\"",
+      "options": [
+        {
+          "label": "Talk: ask Pip for help",
+          "roll": null,
+          "success": {
+            "text": "\"Big shiny sun. Dwarves like sun.\" You turn the dial to the Sun and the door rumbles open.",
+            "next_scene_id": "forge",
+            "effects": []
+          },
+          "fail": {
+            "text": "\"Big shiny sun. Dwarves like sun.\" You turn the dial to the Sun and the door rumbles open.",
+            "next_scene_id": "forge",
+            "effects": []
+          },
+          "requires": {
+            "flag": "pip_friend"
+          }
+        },
+        {
+          "label": "Clever: read the carving and turn the dial to the Sun",
+          "roll": {
+            "skill": "perception",
+            "dc": 10
+          },
+          "success": {
+            "text": "The door rumbles open!",
+            "next_scene_id": "forge",
+            "effects": []
+          },
+          "fail": {
+            "text": "A puff of chalk dust: \"NOPE!\" Then you notice the painted sun, try again, and the door opens.",
+            "next_scene_id": "forge",
+            "effects": []
+          }
+        },
+        {
+          "label": "Fight: force the door open",
+          "roll": {
+            "skill": "athletics",
+            "dc": 12
+          },
+          "success": {
+            "text": "The door grinds open!",
+            "next_scene_id": "forge",
+            "effects": []
+          },
+          "fail": {
+            "text": "You get it open eventually, but the \"NOPE!\" voice laughs the whole time.",
+            "next_scene_id": "forge",
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "forge",
+      "title": "Behind the Door",
+      "text": "In a dusty dwarf forge, a smooth gray rock sits in a stone cradle. When you pick it up, a warm orange glow wakes inside it. This is the Hearthstone! Beside it is a chest with 25 gold.",
+      "options": [
+        {
+          "label": "Take the Hearthstone and go on",
+          "roll": null,
+          "success": {
+            "text": "You carry the warm stone deeper.",
+            "next_scene_id": "larder",
+            "effects": []
+          },
+          "fail": {
+            "text": "You carry the warm stone deeper.",
+            "next_scene_id": "larder",
+            "effects": []
+          }
+        },
+        {
+          "label": "Talk: thank the old dwarves out loud",
+          "roll": null,
+          "success": {
+            "text": "Your voice echoes kindly. On you go.",
+            "next_scene_id": "larder",
+            "effects": []
+          },
+          "fail": {
+            "text": "Your voice echoes kindly. On you go.",
+            "next_scene_id": "larder",
+            "effects": []
+          }
+        },
+        {
+          "label": "Clever: check the chest twice",
+          "roll": null,
+          "success": {
+            "text": "Just the 25 gold. On you go.",
+            "next_scene_id": "larder",
+            "effects": []
+          },
+          "fail": {
+            "text": "Just the 25 gold. On you go.",
+            "next_scene_id": "larder",
+            "effects": []
+          }
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "flag",
+          "key": "hearthstone",
+          "value": true
+        },
+        {
+          "type": "flag",
+          "key": "chest_gold",
+          "value": 25
+        }
+      ]
+    },
+    {
+      "id": "larder",
+      "title": "The Larder",
+      "text": "Three giant rats are gobbling spilled grain. On the top shelf a tiny kobold clutches a jar and sobs, \"Go 'WAY, bad rats! That's the EGG-FOOD!\"",
+      "options": [
+        {
+          "label": "Talk: call to Tib, \"Jump, we'll catch you!\"",
+          "roll": {
+            "skill": "acrobatics",
+            "dc": 10
+          },
+          "success": {
+            "text": "You catch Tib! \"The big-folk are GOOD!\"",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "Tib lands on someone's head. It works, with less dignity.",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "label": "Clever: toss the meat pies into a far corner",
+          "roll": null,
+          "success": {
+            "text": "The rats chase the food, and you rescue Tib.",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              },
+              {
+                "type": "flag",
+                "key": "pies",
+                "value": false
+              }
+            ]
+          },
+          "fail": {
+            "text": "The rats chase the food, and you rescue Tib.",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              },
+              {
+                "type": "flag",
+                "key": "pies",
+                "value": false
+              }
+            ]
+          },
+          "requires": {
+            "flag": "pies"
+          }
+        },
+        {
+          "label": "Fight the rats",
+          "roll": null,
+          "success": {
+            "text": "The rats turn toward you!",
+            "next_scene_id": "rat_fight",
+            "effects": []
+          },
+          "fail": {
+            "text": "The rats turn toward you!",
+            "next_scene_id": "rat_fight",
+            "effects": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "rat_fight",
+      "title": "Fight: 3 Giant Rats",
+      "text": "Three hungry rats snap at you. Beat their number to score a hit.",
+      "options": [
+        {
+          "label": "Fight: attack a rat",
+          "roll": {
+            "skill": "athletics",
+            "dc": 12
+          },
+          "success": {
+            "text": "Hit! A rat goes down.",
+            "next_scene_id": "rat_fight",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "rat_hits",
+                "value": 1
+              }
+            ]
+          },
+          "fail": {
+            "text": "A rat bites you!",
+            "next_scene_id": "rat_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": -4
+              }
+            ]
+          }
+        },
+        {
+          "label": "Clever: throw food",
+          "roll": null,
+          "success": {
+            "text": "Throwing food ends the fight. The rats scurry off and you rescue Tib.",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "Throwing food ends the fight. The rats scurry off and you rescue Tib.",
+            "next_scene_id": "larder_loot",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "tib_rescued",
+                "value": true
+              }
+            ]
+          },
+          "requires": {
+            "flag": "pies"
+          }
+        },
+        {
+          "label": "Talk: drink a healing potion",
+          "roll": null,
+          "success": {
+            "text": "You feel better.",
+            "next_scene_id": "rat_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": 7
+              },
+              {
+                "type": "flag",
+                "key": "potions",
+                "value": -1
+              }
+            ]
+          },
+          "fail": {
+            "text": "You feel better.",
+            "next_scene_id": "rat_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": 7
+              },
+              {
+                "type": "flag",
+                "key": "potions",
+                "value": -1
+              }
+            ]
+          },
+          "requires": {
+            "flag": "potions"
+          }
+        }
+      ],
+      "combat": {
+        "enemies": [
+          {
+            "name": "Rat",
+            "ac": 12,
+            "hp": 7
+          },
+          {
+            "name": "Rat",
+            "ac": 12,
+            "hp": 6
+          },
+          {
+            "name": "Runt",
+            "ac": 12,
+            "hp": 3
+          }
+        ],
+        "hits_to_win": 2,
+        "hit_counter_flag": "rat_hits",
+        "max_rounds": 3,
+        "on_win": "larder_loot",
+        "on_win_effects": [
+          {
+            "type": "flag",
+            "key": "tib_rescued",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "larder_loot",
+      "title": "Kobold Stash",
+      "text": "In a pickle jar you find 1 healing potion and Tobias's missing candles. A blanket hides a tunnel down. A squeaky voice echoes: \"WHO'S THERE? Grizzle Copperclaw is NOT afraid!\"",
+      "options": [
+        {
+          "label": "Go down the tunnel",
+          "roll": null,
+          "success": {
+            "text": "Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          },
+          "fail": {
+            "text": "Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          }
+        },
+        {
+          "label": "Talk: call out \"We're friends!\"",
+          "roll": null,
+          "success": {
+            "text": "The voice goes quiet. Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          },
+          "fail": {
+            "text": "The voice goes quiet. Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          }
+        },
+        {
+          "label": "Clever: creep down quietly",
+          "roll": null,
+          "success": {
+            "text": "Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          },
+          "fail": {
+            "text": "Down you go.",
+            "next_scene_id": "hatchery",
+            "effects": []
+          }
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "flag",
+          "key": "potions",
+          "value": 1
+        },
+        {
+          "type": "flag",
+          "key": "candles",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "hatchery",
+      "title": "Grizzle's Hatchery",
+      "text": "Six copper eggs lie in a nest of socks inside a cold forge. The Starlantern hangs on an anvil. A three-foot kobold in a tablecloth cape and slipping pot helmet squeaks, \"I am GRIZZLE COPPERCLAW, my babies are COLD, and you will NOT take the sky-lamp!\"",
+      "options": [
+        {
+          "label": "Talk: give her the Hearthstone",
+          "roll": null,
+          "success": {
+            "text": "The Hearthstone flares orange in the forge and an egg gives a happy wobble. \"You woke the warm-rock... for us?\" She hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "honorary_copperclaws",
+                "value": true
+              }
+            ]
+          },
+          "fail": {
+            "text": "The Hearthstone flares orange in the forge and an egg gives a happy wobble. \"You woke the warm-rock... for us?\" She hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "honorary_copperclaws",
+                "value": true
+              }
+            ]
+          },
+          "requires": {
+            "flag": "hearthstone"
+          }
+        },
+        {
+          "label": "Talk: offer help (candles, blankets, Marigold's promise)",
+          "roll": {
+            "skill": "persuasion",
+            "dc": 12
+          },
+          "success": {
+            "text": "Grizzle's eyes go soft. She hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": []
+          },
+          "fail": {
+            "text": "\"Prove it!\" You add one more gift and a heartfelt sentence, and it works. She hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": []
+          }
+        },
+        {
+          "label": "Fight Grizzle and her helpers",
+          "roll": null,
+          "success": {
+            "text": "Grizzle raises her spear!",
+            "next_scene_id": "grizzle_fight",
+            "effects": []
+          },
+          "fail": {
+            "text": "Grizzle raises her spear!",
+            "next_scene_id": "grizzle_fight",
+            "effects": []
+          }
+        }
+      ],
+      "advantage_if_any_flag": [
+        "pip_friend",
+        "tib_rescued"
+      ],
+      "advantage_applies_to": "persuasion"
+    },
+    {
+      "id": "grizzle_fight",
+      "title": "Fight: Grizzle Copperclaw",
+      "text": "Grizzle jabs with her spear while two egg-minders hide behind the forge. Her pot helmet keeps slipping over her eyes...",
+      "options": [
+        {
+          "label": "Fight: \"I hit the pot!\"",
+          "roll": {
+            "skill": "athletics",
+            "dc": 13
+          },
+          "success": {
+            "text": "CLANG! The pot falls over her eyes.",
+            "next_scene_id": "grizzle_fight",
+            "effects": [
+              {
+                "type": "flag",
+                "key": "pot_hits",
+                "value": 1
+              }
+            ]
+          },
+          "fail": {
+            "text": "Her spear jabs you!",
+            "next_scene_id": "grizzle_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": -5
+              }
+            ]
+          }
+        },
+        {
+          "label": "Talk: give her the Hearthstone",
+          "roll": null,
+          "success": {
+            "text": "The Hearthstone flares orange in the forge. Grizzle throws down her spear and hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": []
+          },
+          "fail": {
+            "text": "The Hearthstone flares orange in the forge. Grizzle throws down her spear and hands over the Starlantern.",
+            "next_scene_id": "lantern_night",
+            "effects": []
+          },
+          "requires": {
+            "flag": "hearthstone"
+          }
+        },
+        {
+          "label": "Talk: drink a healing potion",
+          "roll": null,
+          "success": {
+            "text": "You feel better.",
+            "next_scene_id": "grizzle_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": 7
+              },
+              {
+                "type": "flag",
+                "key": "potions",
+                "value": -1
+              }
+            ]
+          },
+          "fail": {
+            "text": "You feel better.",
+            "next_scene_id": "grizzle_fight",
+            "effects": [
+              {
+                "type": "hp",
+                "target": "actor",
+                "delta": 7
+              },
+              {
+                "type": "flag",
+                "key": "potions",
+                "value": -1
+              }
+            ]
+          },
+          "requires": {
+            "flag": "potions"
+          }
+        }
+      ],
+      "combat": {
+        "enemies": [
+          {
+            "name": "Grizzle",
+            "ac": 13,
+            "hp": 30
+          },
+          {
+            "name": "Egg-Minder",
+            "ac": 11,
+            "hp": 4
+          },
+          {
+            "name": "Egg-Minder",
+            "ac": 11,
+            "hp": 4
+          }
+        ],
+        "hits_to_win": 2,
+        "hit_counter_flag": "pot_hits",
+        "on_win": "lantern_night",
+        "surrender_text": "\"Take the lamp! Just... not the babies.\""
+      }
+    },
+    {
+      "id": "lantern_night",
+      "title": "Lantern Night",
+      "text": "You come down Millstone Hill with the Starlantern held high, and the whole village cheers. That night the lantern blazes silver while a thousand paper lanterns float up. At the edge of the firelight, Pip waves like crazy. The End... for now.",
+      "options": [],
+      "end": true,
+      "rewards": {
+        "gold": "60 gold from Marigold (75 if haggled) + 25 from the dwarf chest, about 30 each",
+        "item": "Copperclaw Lucky Scale: once per session, reroll a 1 on the big die",
+        "level": 2,
+        "level_up": {
+          "Fighter": "20 HP; once per session take two actions on one turn",
+          "Cleric": "21 HP; Heal goes up to 4 uses",
+          "Rogue": "17 HP; every turn, hide or dash for free"
+        }
+      },
+      "wrap_up_prompt": "What does your hero do at the festival?"
+    }
+  ]
+}
