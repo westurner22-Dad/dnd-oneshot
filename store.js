@@ -17,7 +17,10 @@ function localStore(gameId) {
   return {
     async get() { return read(); },
     cas(expectedV, doc) {
-      return locked(() => {
+      return locked(async () => {
+        // Chrome syncs localStorage between tabs asynchronously, so a tab can read a stale copy right after another
+        // tab's write. A short settle inside the lock lets it catch up. (Local backend is test-only; Firebase CAS is server-side.)
+        await new Promise(r => setTimeout(r, 40));
         const cur = read();
         if ((cur ? cur.v : 0) !== expectedV) return false;
         const next = { ...doc, v: expectedV + 1 };
@@ -47,8 +50,10 @@ function localChat(gameId) {
       });
     },
     chatSubscribe(cb) {
-      const h = () => cb(read()); ch.addEventListener('message', h); mine.add(h); h();
-      return () => { ch.removeEventListener('message', h); mine.delete(h); };
+      const h = () => cb(read()), hs = e => { if (e.key === key) h(); };
+      // BroadcastChannel occasionally drops a message to a background tab; the 'storage' event is a second path.
+      ch.addEventListener('message', h); addEventListener('storage', hs); mine.add(h); h();
+      return () => { ch.removeEventListener('message', h); removeEventListener('storage', hs); mine.delete(h); };
     }
   };
 }

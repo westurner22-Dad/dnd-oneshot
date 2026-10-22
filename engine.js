@@ -7,8 +7,6 @@
     arcana:'int', investigation:'int', history:'int', insight:'wis', perception:'wis', medicine:'wis',
     survival:'wis', persuasion:'cha', deception:'cha', intimidation:'cha', performance:'cha' };
   const USE_STAT_FALLBACK = false;
-  // Friendly names for Designer's generic pregens ("The Fighter" -> Bran), from dnd-companion.html.
-  const NICK = { fighter:'Bran', rogue:'Vex', cleric:'Doran' };
 
   const statMod = s => Math.floor(((+s || 10) - 10) / 2);
   const truthy = v => typeof v === 'number' ? v > 0 : !!v;
@@ -20,7 +18,9 @@
     need(d, 'start', 'top'); need(d, 'pregens', 'top'); need(d, 'scenes', 'top');
     const ids = new Set((d.scenes || []).map(s => s && s.id));
     if (d.start && !ids.has(d.start)) e.push(`top: start "${d.start}" is not a scene id`);
-    if ((d.pregens || []).length < 3) e.push('top: need 3 pregens');
+    if ((d.pregens || []).filter(p => p && !p.replaces).length < 3) e.push('top: need 3 seat pregens (without "replaces")');
+    (d.pregens || []).forEach((p, i) => { if (p && p.replaces && !(d.pregens || []).some(q => q.name === p.replaces && !q.replaces))
+      e.push(`pregens[${i}]: replaces "${p.replaces}" is not a seat pregen`); });
     (d.pregens || []).forEach((p, i) => ['name', 'class', 'hp'].forEach(k => need(p, k, `pregens[${i}]`)));
     (d.scenes || []).forEach((s, i) => {
       const w = `scene ${s && s.id || '#' + i}`;
@@ -44,9 +44,44 @@
   }
 
   const sceneOf = (d, id) => d.scenes.find(s => s.id === id);
-  // Designer can set `nickname` on a pregen to override NICK without touching code.
-  const displayName = p => /^the /i.test(p.name) && p.nickname ? `${p.nickname} the ${p.class[0].toUpperCase() + p.class.slice(1)}`
-    : /^the /i.test(p.name) ? `${NICK[String(p.class).toLowerCase()] || p.name} the ${p.class[0].toUpperCase() + p.class.slice(1)}` : p.name;
+  // Names come from the data ("Bran" -> "Bran the Fighter"). Fallback: a generic "The Fighter" uses its optional
+  // `nickname` field, else stays "The Fighter". No names are hard-coded here.
+  const cap = s => String(s || '')[0] ? String(s)[0].toUpperCase() + String(s).slice(1) : '';
+  const displayName = p => {
+    if (!p) return '?';
+    const n = /^the /i.test(p.name) ? p.nickname : p.name;
+    return n ? `${n} the ${cap(p.class)}` : p.name;
+  };
+
+  // ---- seats: 3 players. Seat pregens = pregens WITHOUT `replaces`, in data order (Bran, Doran, Vex).
+  // A pregen with `replaces: "<name>"` takes over that seat once flag swap_rogue_to_ranger is truthy.
+  const SWAP_FLAG = 'swap_rogue_to_ranger';
+  const seatPregens = d => d.pregens.filter(p => !p.replaces).slice(0, 3);
+  function heroOf(d, doc, i) {
+    const base = seatPregens(d)[i];
+    if (base && doc && doc.flags && truthy(doc.flags[SWAP_FLAG])) {
+      const r = d.pregens.find(p => p.replaces === base.name);
+      if (r) return r;
+    }
+    return base;
+  }
+  const party = (d, doc) => [0, 1, 2].map(i => heroOf(d, doc, i));
+
+  // Old saves (13-scene era, or Firebase dropping empty objects) may lack flags/combatActions/done; fill defaults.
+  // Unknown scene id (scene removed from data) -> restart at data.start rather than crash. Returns the same doc.
+  function normalize(doc, d) {
+    if (!doc) return doc;
+    if (!doc.flags || typeof doc.flags !== 'object') doc.flags = {};
+    if (!Array.isArray(doc.log)) doc.log = [];
+    if (!Array.isArray(doc.hp)) doc.hp = [];
+    const P = party(d, doc);
+    for (let i = 0; i < 3; i++) doc.hp[i] = Math.min(P[i].hp, Math.max(1, +doc.hp[i] || P[i].hp));
+    doc.turn = (+doc.turn || 0) % 3;
+    doc.combatActions = +doc.combatActions || 0;
+    doc.done = !!doc.done;
+    if (!sceneOf(d, doc.scene)) { doc.log.push({ t: 'scene', text: `(scene "${doc.scene}" no longer exists, back to the start)` }); doc.scene = d.start; doc.done = false; }
+    return doc;
+  }
 
   function modFor(p, skill, scene) {
     if (scene && scene.combat && p.attack) return +p.attack.to_hit || 0;   // decision (2)
@@ -60,10 +95,12 @@
     for (const f of effects || []) {
       if (f.type === 'hp') {
         const who = f.target === 'party' ? [0, 1, 2] : [actor];
-        who.forEach(i => { const max = d.pregens[i].hp;
+        who.forEach(i => { const max = heroOf(d, doc, i).hp;
           doc.hp[i] = Math.min(max, Math.max(1, doc.hp[i] + f.delta)); });   // decision (1): floor at 1
       } else if (f.type === 'flag') {
+        const before = party(d, doc);
         doc.flags[f.key] = typeof f.value === 'number' ? (+doc.flags[f.key] || 0) + f.value : f.value; // decision (3)
+        party(d, doc).forEach((p, i) => { if (p !== before[i]) doc.hp[i] = p.hp; });   // swapped-in hero starts at full HP
       }
     }
   }
@@ -75,19 +112,19 @@
   }
 
   function newGame(d) {
-    const doc = { scene: null, turn: 0, hp: d.pregens.slice(0, 3).map(p => p.hp), flags: {}, log: [], done: false, combatActions: 0 };
+    const doc = { scene: null, turn: 0, hp: seatPregens(d).map(p => p.hp), flags: {}, log: [], done: false, combatActions: 0 };
     enter(doc, d, d.start, 0);
     doc.log.push({ t: 'scene', text: sceneOf(d, d.start).title });
     return doc;
   }
 
-  const available = (o, doc) => !o.requires || truthy(doc.flags[o.requires.flag]);
+  const available = (o, doc) => !o.requires || truthy((doc.flags || {})[o.requires.flag]);
   const hasAdvantage = (s, o, doc) => !!(o.roll && s.advantage_if_any_flag &&
-      (!s.advantage_applies_to || s.advantage_applies_to === o.roll.skill) && s.advantage_if_any_flag.some(k => truthy(doc.flags[k])));
+      (!s.advantage_applies_to || s.advantage_applies_to === o.roll.skill) && s.advantage_if_any_flag.some(k => truthy((doc.flags || {})[k])));
 
   // Resolve one action by the current player. rng() -> [0,1). Returns a NEW doc.
   function act(doc0, d, optIndex, rng = Math.random) {
-    const doc = JSON.parse(JSON.stringify(doc0)), actor = doc.turn, p = d.pregens[actor];
+    const doc = normalize(JSON.parse(JSON.stringify(doc0)), d), actor = doc.turn, p = heroOf(d, doc, actor);
     const s = sceneOf(d, doc.scene), o = s.options[optIndex];
     if (!o || !available(o, doc) || doc.done) throw new Error('option not available');
     const who = displayName(p);
@@ -121,6 +158,6 @@
     return doc;
   }
 
-  const api = { validate, newGame, act, available, hasAdvantage, modFor, displayName, sceneOf, SKILL_STAT };
+  const api = { validate, newGame, act, available, hasAdvantage, modFor, displayName, sceneOf, heroOf, party, normalize, SKILL_STAT };
   if (typeof module !== 'undefined') module.exports = api; else root.Engine = api;
 })(this);

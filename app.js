@@ -23,9 +23,9 @@ async function main() {
   if (!(p >= 1 && p <= 3)) p = 1;
   me = p - 1;
   store = makeStore(g, GAME_CONFIG);
-  doc = await store.get();
-  if (!doc) { await store.cas(0, Engine.newGame(DATA)); doc = await store.get(); }   // first visitor creates the game
-  store.subscribe(d => { doc = d; render(); });
+  doc = Engine.normalize(await store.get(), DATA);
+  if (!doc) { await store.cas(0, Engine.newGame(DATA)); doc = Engine.normalize(await store.get(), DATA); }   // first visitor creates the game
+  store.subscribe(d => { doc = Engine.normalize(d, DATA); render(); });
   initChat();
   window.addEventListener('hashchange', () => location.reload());
   render();
@@ -37,14 +37,14 @@ async function choose(i) {
   let next;
   try { next = Engine.act(base, DATA, i); } catch (e) { console.warn(e.message); return; }
   const ok = await store.cas(base.v, next);           // only wins if nobody else moved first
-  doc = await store.get();
+  doc = Engine.normalize(await store.get(), DATA);
   if (ok) lastRoll = next.log.filter(x => x.t === 'act').pop();
   render();
 }
 
 function render() {
   if (!doc) return;
-  const s = Engine.sceneOf(DATA, doc.scene), P = DATA.pregens.slice(0, 3);
+  const s = Engine.sceneOf(DATA, doc.scene), P = Engine.party(DATA, doc);
   const name = i => Engine.displayName(P[i]);
   const mine = doc.turn === me && !doc.done;
   const links = [1, 2, 3].map(n => `${location.href.split('#')[0]}#g=${parseHash().g}&p=${n}`);
@@ -76,7 +76,7 @@ const CHAT_MAX = 300;
 function initChat() {
   const box = $('#chat'), list = $('#chatlog'), form = $('#chatform'), inp = $('#chatin');
   box.hidden = false; inp.maxLength = CHAT_MAX;
-  const nm = p => { try { return Engine.displayName(DATA.pregens[p - 1]); } catch (e) { return 'Player ' + p; } };
+  const nm = p => { try { return Engine.displayName(Engine.heroOf(DATA, doc, p - 1)); } catch (e) { return 'Player ' + p; } };
   store.chatSubscribe(msgs => {
     list.replaceChildren(...msgs.slice(-50).map(m => {
       const row = document.createElement('p'), b = document.createElement('b'), t = document.createElement('time');
