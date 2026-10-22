@@ -8,7 +8,7 @@
     survival:'wis', persuasion:'cha', deception:'cha', intimidation:'cha', performance:'cha' };
   const USE_STAT_FALLBACK = false;
   // Friendly names for Designer's generic pregens ("The Fighter" -> Bran), from dnd-companion.html.
-  const NICK = { fighter:'Bran', rogue:'Vex', cleric:'Maren' };
+  const NICK = { fighter:'Bran', rogue:'Vex', cleric:'Doran' };
 
   const statMod = s => Math.floor(((+s || 10) - 10) / 2);
   const truthy = v => typeof v === 'number' ? v > 0 : !!v;
@@ -44,7 +44,9 @@
   }
 
   const sceneOf = (d, id) => d.scenes.find(s => s.id === id);
-  const displayName = p => /^the /i.test(p.name) ? `${NICK[String(p.class).toLowerCase()] || p.name} the ${p.class[0].toUpperCase() + p.class.slice(1)}` : p.name;
+  // Designer can set `nickname` on a pregen to override NICK without touching code.
+  const displayName = p => /^the /i.test(p.name) && p.nickname ? `${p.nickname} the ${p.class[0].toUpperCase() + p.class.slice(1)}`
+    : /^the /i.test(p.name) ? `${NICK[String(p.class).toLowerCase()] || p.name} the ${p.class[0].toUpperCase() + p.class.slice(1)}` : p.name;
 
   function modFor(p, skill, scene) {
     if (scene && scene.combat && p.attack) return +p.attack.to_hit || 0;   // decision (2)

@@ -26,6 +26,7 @@ async function main() {
   doc = await store.get();
   if (!doc) { await store.cas(0, Engine.newGame(DATA)); doc = await store.get(); }   // first visitor creates the game
   store.subscribe(d => { doc = d; render(); });
+  initChat();
   window.addEventListener('hashchange', () => location.reload());
   render();
 }
@@ -50,6 +51,7 @@ function render() {
   let h = `<div id="turn" class="card ${mine ? 'mine' : 'wait'}">${doc.done ? '🏁 The adventure is over!'
           : mine ? `⭐ Your turn, ${esc(name(me))}!` : `⏳ Waiting for ${esc(name(doc.turn))}…`}</div>`;
   h += `<div id="party">${P.map((p, i) => `<div class="${i === doc.turn ? 'now' : ''}">${i === me ? '🫵 ' : ''}<b>${esc(name(i))}</b><br>HP ${doc.hp[i]}/${p.hp}</div>`).join('')}</div>`;
+  if (P[me].notes) h += `<details class="card" id="hero"><summary>📜 Your hero: ${esc(name(me))}</summary><p>${esc(P[me].notes)}</p></details>`;
   if (lastRoll && lastRoll.dice) h += rollHtml(lastRoll);
   h += `<div class="card"><h2>${esc(s.title)}</h2><p>${esc(s.text)}</p>`;
   if (s.end) {
@@ -68,6 +70,30 @@ function render() {
   $('#app').innerHTML = h;
   document.querySelectorAll('button[data-i]').forEach(b => b.onclick = () => choose(+b.dataset.i));
 }
+// ---- Chat: lives in #chat outside #app, so game re-renders never wipe what you're typing. ----
+// Built with textContent only (no innerHTML), so message text can't inject markup.
+const CHAT_MAX = 300;
+function initChat() {
+  const box = $('#chat'), list = $('#chatlog'), form = $('#chatform'), inp = $('#chatin');
+  box.hidden = false; inp.maxLength = CHAT_MAX;
+  const nm = p => { try { return Engine.displayName(DATA.pregens[p - 1]); } catch (e) { return 'Player ' + p; } };
+  store.chatSubscribe(msgs => {
+    list.replaceChildren(...msgs.slice(-50).map(m => {
+      const row = document.createElement('p'), b = document.createElement('b'), t = document.createElement('time');
+      b.textContent = nm(m.p) + ': ';
+      t.textContent = new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });   // reader's local time
+      row.append(t, ' ', b, String(m.text)); return row;
+    }));
+    list.scrollTop = list.scrollHeight;
+  });
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const text = inp.value.trim().slice(0, CHAT_MAX); if (!text) return;
+    inp.value = '';
+    try { if (!(await store.chatSend(me + 1, text))) inp.value = text; } catch (err) { inp.value = text; console.warn(err); }
+  };
+}
+
 const fmt = n => (n >= 0 ? '+' : '') + n;
 const rollHtml = r => `<div id="roll" class="card">🎲 ${r.dice.join(' / ')}${r.adv ? ' (keep higher)' : ''} ${fmt(r.mod)} = <b>${r.total}</b> vs ${r.dc} — <span class="${r.ok ? 'ok' : 'bad'}">${r.ok ? 'Success!' : 'Fail'}</span></div>`;
 const logHtml = e => e.t === 'scene' ? `<p class="sc">— ${esc(e.text)} —</p>`

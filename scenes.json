@@ -22,7 +22,7 @@
         "to_hit": 5,
         "damage": "1d8+5"
       },
-      "notes": "Human former caravan guard. Best move: swing your sword (+5, 1d8+5). Second Wind once per fight: heal 1d10+1. Everything else +0."
+      "notes": "Human (he/him), former caravan guard. Best move: swing your sword (+5, 1d8+5). Second Wind once per fight: heal 1d10+1. Everything else +0."
     },
     {
       "name": "The Cleric",
@@ -44,7 +44,7 @@
         "to_hit": 5,
         "damage": "1d8"
       },
-      "notes": "Dwarf priestess; sees in the dark, speaks Draconic. Best move: Heal, 3 uses, ally regains 1d8+3. Everything else +0."
+      "notes": "Dwarf priest (he/him); sees in the dark, speaks Draconic. Carries a little copper ring from his husband, Tomas, who runs the bakery back home; likes to say \"Tomas would love this place.\" Best move: Heal, 3 uses, ally regains 1d8+3. Everything else +0."
     },
     {
       "name": "The Rogue",
@@ -69,7 +69,7 @@
         "to_hit": 5,
         "damage": "1d6+3 (+1d6 if a friend is next to the target)"
       },
-      "notes": "Halfling. Best move: sneaky shot. Everything else +0."
+      "notes": "Halfling (he/him). Best move: sneaky shot. Everything else +0."
     }
   ],
   "scenes": [

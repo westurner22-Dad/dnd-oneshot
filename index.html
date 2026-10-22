@@ -21,10 +21,16 @@
   #party .now{outline:2px solid var(--gold)}
   #log{max-height:40vh;overflow:auto;font-size:.9rem} #log p{margin:.35em 0} #log .sc{color:var(--gold)}
   #links input{width:100%;font-size:.8rem;margin:3px 0;background:#1c1610;color:var(--ink);border:1px solid #444;padding:6px}
+  #chat h2{margin-bottom:4px} #chatlog{max-height:28vh;overflow:auto;font-size:.9rem} #chatlog p{margin:.3em 0;overflow-wrap:anywhere}
+  #chatlog time{color:var(--dim);font-size:.8rem}
+  #chatform{display:flex;gap:6px} #chatin{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px;background:#1c1610;color:var(--ink);border:1px solid #555;border-radius:10px}
+  #chatform button{width:auto;min-height:44px;margin:0;text-align:center;padding:0 14px}
 </style></head>
 <body><main>
   <h1>🏮 The Lantern of Larkhollow</h1>
   <div id="app"><p>Loading…</p></div>
+  <section id="chat" class="card" hidden><h2>💬 Party chat</h2><div id="chatlog"></div>
+    <form id="chatform"><input id="chatin" placeholder="Message the party…" autocomplete="off" enterkeyhint="send"><button>Send</button></form></section>
 </main>
 <script src="config.js"></script>
 <script src="engine.js"></script>
