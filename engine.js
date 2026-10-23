@@ -18,9 +18,7 @@
     need(d, 'start', 'top'); need(d, 'pregens', 'top'); need(d, 'scenes', 'top');
     const ids = new Set((d.scenes || []).map(s => s && s.id));
     if (d.start && !ids.has(d.start)) e.push(`top: start "${d.start}" is not a scene id`);
-    if ((d.pregens || []).filter(p => p && !p.replaces).length < 3) e.push('top: need 3 seat pregens (without "replaces")');
-    (d.pregens || []).forEach((p, i) => { if (p && p.replaces && !(d.pregens || []).some(q => q.name === p.replaces && !q.replaces))
-      e.push(`pregens[${i}]: replaces "${p.replaces}" is not a seat pregen`); });
+    if ((d.pregens || []).length < 3) e.push('top: need 3 pregens');
     (d.pregens || []).forEach((p, i) => ['name', 'class', 'hp'].forEach(k => need(p, k, `pregens[${i}]`)));
     (d.scenes || []).forEach((s, i) => {
       const w = `scene ${s && s.id || '#' + i}`;
@@ -53,22 +51,17 @@
     return n ? `${n} the ${cap(p.class)}` : p.name;
   };
 
-  // ---- seats: 3 players. Seat pregens = pregens WITHOUT `replaces`, in data order (Bran, Doran, Vex).
-  // A pregen with `replaces: "<name>"` takes over that seat once flag swap_rogue_to_ranger is truthy.
-  const SWAP_FLAG = 'swap_rogue_to_ranger';
-  const seatPregens = d => d.pregens.filter(p => !p.replaces).slice(0, 3);
-  function heroOf(d, doc, i) {
-    const base = seatPregens(d)[i];
-    if (base && doc && doc.flags && truthy(doc.flags[SWAP_FLAG])) {
-      const r = d.pregens.find(p => p.replaces === base.name);
-      if (r) return r;
-    }
-    return base;
-  }
+  // ---- seats: the first 3 pregens in the data, in order (Bran, Doran, Rook). No seat swapping.
+  // Old live saves whose seat 3 was Vex simply get whoever is 3rd in the data now (Rook); HP is clamped in normalize.
+  const seatPregens = d => d.pregens.slice(0, 3);
+  const heroOf = (d, doc, i) => seatPregens(d)[i];
   const party = (d, doc) => [0, 1, 2].map(i => heroOf(d, doc, i));
 
   // Old saves (13-scene era, or Firebase dropping empty objects) may lack flags/combatActions/done; fill defaults.
   // Unknown scene id (scene removed from data) -> restart at data.start rather than crash. Returns the same doc.
+  // Scenes removed from the data after live games started (Oct 22). Saves sitting in one move to the nearest
+  // existing scene instead of restarting. Any other unknown id falls back to data.start.
+  const REDIRECT = { fork: 'ranger_arrives', road: 'ranger_arrives', sky_sword: 'ranger_arrives', goblin_fight: 'mine_gate' };
   function normalize(doc, d) {
     if (!doc) return doc;
     if (!doc.flags || typeof doc.flags !== 'object') doc.flags = {};
@@ -79,6 +72,7 @@
     doc.turn = (+doc.turn || 0) % 3;
     doc.combatActions = +doc.combatActions || 0;
     doc.done = !!doc.done;
+    if (!sceneOf(d, doc.scene) && REDIRECT[doc.scene] && sceneOf(d, REDIRECT[doc.scene])) { doc.scene = REDIRECT[doc.scene]; doc.combatActions = 0; }
     if (!sceneOf(d, doc.scene)) { doc.log.push({ t: 'scene', text: `(scene "${doc.scene}" no longer exists, back to the start)` }); doc.scene = d.start; doc.done = false; }
     return doc;
   }
@@ -98,9 +92,7 @@
         who.forEach(i => { const max = heroOf(d, doc, i).hp;
           doc.hp[i] = Math.min(max, Math.max(1, doc.hp[i] + f.delta)); });   // decision (1): floor at 1
       } else if (f.type === 'flag') {
-        const before = party(d, doc);
         doc.flags[f.key] = typeof f.value === 'number' ? (+doc.flags[f.key] || 0) + f.value : f.value; // decision (3)
-        party(d, doc).forEach((p, i) => { if (p !== before[i]) doc.hp[i] = p.hp; });   // swapped-in hero starts at full HP
       }
     }
   }

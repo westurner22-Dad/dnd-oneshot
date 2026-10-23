@@ -47,31 +47,6 @@
       "notes": "Dwarf priest (he/him); sees in the dark, speaks Draconic. Carries a little copper ring from his husband, Tomas, who runs the bakery back home; likes to say \"Tomas would love this place.\" Best move: Heal, 3 uses, ally regains 1d8+3. Everything else +0."
     },
     {
-      "name": "Vex",
-      "class": "rogue",
-      "hp": 10,
-      "ac": 14,
-      "str": 10,
-      "dex": 16,
-      "con": 12,
-      "int": 10,
-      "wis": 12,
-      "cha": 14,
-      "skills": {
-        "stealth": 7,
-        "perception": 5,
-        "sleight of hand": 5,
-        "persuasion": 4,
-        "deception": 4
-      },
-      "attack": {
-        "name": "Sneaky shot",
-        "to_hit": 5,
-        "damage": "1d6+3 (+1d6 if a friend is next to the target)"
-      },
-      "notes": "Halfling (he/him). Best move: sneaky shot. Everything else +0."
-    },
-    {
       "name": "Rook Ashgrove",
       "class": "ranger",
       "hp": 12,
@@ -93,15 +68,14 @@
         "to_hit": 5,
         "damage": "1d8+3"
       },
-      "replaces": "Vex",
-      "notes": "Human (he/him), intrepid adventurer with loose morals. Joins in the comedy branch when swap_rogue_to_ranger is set; Vex's player takes him. Best move: longbow (+5, 1d8+3). One trick: once per fight, add 1d6 to a hit. Everything else +0."
+      "notes": "Human (he/him), intrepid adventurer with loose morals. Best move: longbow (+5, 1d8+3). One trick: once per fight, add 1d6 to a hit. Everything else +0."
     }
   ],
   "scenes": [
     {
       "id": "tavern",
       "title": "The Tavern",
-      "text": "Rain taps on the windows of the Bramble & Barrel, the coziest tavern in Larkhollow. Above the fireplace there's an empty iron hook. Marigold Fenn cries, \"Friends, somebody has stolen the Starlantern!\" She'll pay 60 gold and gives you 2 healing potions and a basket of meat pies.",
+      "text": "This morning, crossing a sunny meadow on the way to Larkhollow, your friend Vex the halfling heard a whistle from above. A glowing black sword with a tiny grinning face on the hilt dropped out of the clouds and landed, point first, right in his backside. Vex looked back, sighed happily, said \"oh yeah, that's the stuff,\" and toppled gently into the daisies. He looked very comfortable. Rook Ashgrove, a muddy ranger who happened to be passing, helped you lay Vex to rest under a nice tree, and has tagged along ever since. The sword is wrapped in a blanket in Bran's pack, and it keeps giggling. Now rain taps on the windows of the Bramble & Barrel, the coziest tavern in Larkhollow. Above the fireplace there's an empty iron hook. Marigold Fenn cries, \"Friends, somebody has stolen the Starlantern!\" She'll pay 60 gold and gives you 2 healing potions and a basket of meat pies.",
       "options": [
         {
           "label": "Talk: ask Marigold for more gold",
@@ -219,7 +193,7 @@
           },
           "success": {
             "text": "Tiny three-toed footprints and a copper scale. Kobolds! The red mud only comes from Millstone Hill.",
-            "next_scene_id": "fork",
+            "next_scene_id": "ranger_arrives",
             "effects": [
               {
                 "type": "flag",
@@ -230,7 +204,7 @@
           },
           "fail": {
             "text": "Tiny three-toed muddy footprints and a shiny copper scale.",
-            "next_scene_id": "fork",
+            "next_scene_id": "ranger_arrives",
             "effects": []
           }
         },
@@ -242,7 +216,7 @@
           },
           "success": {
             "text": "A slate drawing: six eggs in a ring of candles. \"They're not threatening anyone. Their eggs are cold.\" Tobias gives you a box of candles.",
-            "next_scene_id": "fork",
+            "next_scene_id": "ranger_arrives",
             "effects": [
               {
                 "type": "flag",
@@ -253,7 +227,7 @@
           },
           "fail": {
             "text": "His candles keep vanishing; the thieves left a slate drawing of six eggs ringed by candles. He gives you a box of candles anyway.",
-            "next_scene_id": "fork",
+            "next_scene_id": "ranger_arrives",
             "effects": [
               {
                 "type": "flag",
@@ -271,7 +245,7 @@
           },
           "success": {
             "text": "\"Little dragons carried a glowing star into the old dwarf mine. The dwarves left a magic warm-stone deep inside, behind a door with a sun on it.\"",
-            "next_scene_id": "fork",
+            "next_scene_id": "ranger_arrives",
             "effects": [
               {
                 "type": "flag",
@@ -282,316 +256,30 @@
           },
           "fail": {
             "text": "\"Saw little dragons carrying a glowing star up the hill into the old dwarf mine. One waved!\"",
-            "next_scene_id": "fork",
-            "effects": []
-          }
-        }
-      ]
-    },
-    {
-      "id": "road",
-      "title": "The Goblin Toll",
-      "text": "At a rickety bridge, two goblins have hung a rope of tin cans by a sign: TOL BRIDJ. 5 SILVURS EECH. \"Halt, pay King Snag or else!\" \"Or else what, boss?\" whispers the round one, chewing an onion.",
-      "options": [
-        {
-          "label": "Talk: haggle with Snag",
-          "roll": {
-            "skill": "persuasion",
-            "dc": 10
-          },
-          "success": {
-            "text": "Snag lowers the toll to \"1 silver and a compliment\" and brags, \"We saw the lizard-folk go by with a shiny lamp!\"",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          },
-          "fail": {
-            "text": "You pay 15 silver. Snag brags, \"We saw the lizard-folk go by with a shiny lamp!\"",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          }
-        },
-        {
-          "label": "Clever: give Mudge a meat pie",
-          "roll": null,
-          "success": {
-            "text": "Mudge switches sides and Snag gives up. Across you go!",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          },
-          "fail": {
-            "text": "Mudge switches sides and Snag gives up. Across you go!",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          },
-          "requires": {
-            "flag": "pies"
-          }
-        },
-        {
-          "label": "Fight the goblins",
-          "roll": null,
-          "success": {
-            "text": "Swords out!",
-            "next_scene_id": "goblin_fight",
-            "effects": []
-          },
-          "fail": {
-            "text": "Swords out!",
-            "next_scene_id": "goblin_fight",
-            "effects": []
-          }
-        }
-      ]
-    },
-    {
-      "id": "goblin_fight",
-      "title": "Fight: Snag and Mudge",
-      "text": "Snag waves a rusty sword. Mudge hides behind the sign. Each turn you move and do one thing. Roll to hit: if you beat their number, you score a hit.",
-      "options": [
-        {
-          "label": "Fight: attack Snag",
-          "roll": {
-            "skill": "athletics",
-            "dc": 14
-          },
-          "success": {
-            "text": "Hit! Snag goes down and Mudge cries \"TACTICAL RETREAT!\"",
-            "next_scene_id": "mine_gate",
-            "effects": [
-              {
-                "type": "flag",
-                "key": "goblins_hit",
-                "value": 1
-              }
-            ]
-          },
-          "fail": {
-            "text": "Snag's rusty sword nicks you!",
-            "next_scene_id": "goblin_fight",
-            "effects": [
-              {
-                "type": "hp",
-                "target": "actor",
-                "delta": -5
-              }
-            ]
-          }
-        },
-        {
-          "label": "Fight: attack Mudge",
-          "roll": {
-            "skill": "athletics",
-            "dc": 11
-          },
-          "success": {
-            "text": "Mudge goes down and Snag gives up!",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          },
-          "fail": {
-            "text": "An onion bonks you!",
-            "next_scene_id": "goblin_fight",
-            "effects": [
-              {
-                "type": "hp",
-                "target": "actor",
-                "delta": -1
-              }
-            ]
-          }
-        },
-        {
-          "label": "Talk: glare at Mudge",
-          "roll": null,
-          "success": {
-            "text": "Mudge surrenders the moment you glare. Snag gives up too.",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          },
-          "fail": {
-            "text": "Mudge surrenders the moment you glare. Snag gives up too.",
-            "next_scene_id": "mine_gate",
-            "effects": []
-          }
-        }
-      ],
-      "combat": {
-        "enemies": [
-          {
-            "name": "Snag",
-            "ac": 14,
-            "hp": 7,
-            "attack": "+4, 1d6+2"
-          },
-          {
-            "name": "Mudge",
-            "ac": 11,
-            "hp": 4,
-            "attack": "+2, 1"
-          }
-        ],
-        "hits_to_win": 1,
-        "max_rounds": 3,
-        "on_win": "mine_gate"
-      }
-    },
-    {
-      "id": "fork",
-      "title": "The Fork in the Road",
-      "text": "The road splits. The main road winds toward the bridge. A sunny meadow shortcut cuts across the hill. A cow stands at the fork, chewing slowly, looking like she knows things.",
-      "options": [
-        {
-          "label": "Clever: take the main road",
-          "roll": null,
-          "success": {
-            "text": "You stick to the main road toward the bridge.",
-            "next_scene_id": "road",
-            "effects": []
-          },
-          "fail": {
-            "text": "You stick to the main road toward the bridge.",
-            "next_scene_id": "road",
-            "effects": []
-          }
-        },
-        {
-          "label": "Talk: ask the cow which way",
-          "roll": {
-            "skill": "animal handling",
-            "dc": 10
-          },
-          "success": {
-            "text": "The cow moos once, firmly, at the main road. You trust the cow.",
-            "next_scene_id": "road",
-            "effects": [
-              {
-                "type": "flag",
-                "key": "cow_friend",
-                "value": true
-              }
-            ]
-          },
-          "fail": {
-            "text": "The cow just chews. You take the main road anyway.",
-            "next_scene_id": "road",
-            "effects": []
-          }
-        },
-        {
-          "label": "Sneak: take the meadow shortcut",
-          "roll": null,
-          "success": {
-            "text": "Daisies, butterflies, a lovely breeze. What could go wrong?",
-            "next_scene_id": "sky_sword",
-            "effects": []
-          },
-          "fail": {
-            "text": "Daisies, butterflies, a lovely breeze. What could go wrong?",
-            "next_scene_id": "sky_sword",
-            "effects": []
-          }
-        }
-      ]
-    },
-    {
-      "id": "sky_sword",
-      "title": "Something Falls from the Sky",
-      "text": "A whistle from above. A glowing black sword with a tiny grinning face on the hilt drops out of the clouds and lands, point first, right in Vex's backside. Vex looks back, sighs happily, says \"oh yeah, that's the stuff,\" and topples gently into the daisies. Somehow he looks very comfortable. The sword giggles.",
-      "options": [
-        {
-          "label": "Talk: say a few kind words for Vex",
-          "roll": null,
-          "success": {
-            "text": "Doran says something lovely. Bran sniffs loudly and says it's hay fever.",
-            "next_scene_id": "ranger_arrives",
-            "effects": []
-          },
-          "fail": {
-            "text": "Doran says something lovely. Bran sniffs loudly and says it's hay fever.",
             "next_scene_id": "ranger_arrives",
             "effects": []
           }
-        },
-        {
-          "label": "Clever: pull out the sword and look at it",
-          "roll": {
-            "skill": "arcana",
-            "dc": 10
-          },
-          "success": {
-            "text": "It's a demon sword, and it's homesick. It hums a sad little tune.",
-            "next_scene_id": "ranger_arrives",
-            "effects": [
-              {
-                "type": "flag",
-                "key": "sword_read",
-                "value": true
-              }
-            ]
-          },
-          "fail": {
-            "text": "It hums at you, rudely. You wrap it in a blanket.",
-            "next_scene_id": "ranger_arrives",
-            "effects": []
-          }
-        },
-        {
-          "label": "Sneak: check Vex's pockets for anything useful",
-          "roll": {
-            "skill": "sleight of hand",
-            "dc": 10
-          },
-          "success": {
-            "text": "You find a gold tooth. Nobody asks whose.",
-            "next_scene_id": "ranger_arrives",
-            "effects": [
-              {
-                "type": "flag",
-                "key": "gold_tooth",
-                "value": true
-              }
-            ]
-          },
-          "fail": {
-            "text": "Just lint and an IOU. Vex would want you to keep moving.",
-            "next_scene_id": "ranger_arrives",
-            "effects": []
-          }
-        }
-      ],
-      "on_enter": [
-        {
-          "type": "flag",
-          "key": "vex_dead",
-          "value": true
-        },
-        {
-          "type": "flag",
-          "key": "demon_sword",
-          "value": true
-        },
-        {
-          "type": "flag",
-          "key": "swap_rogue_to_ranger",
-          "value": true
         }
       ]
     },
     {
       "id": "ranger_arrives",
-      "title": "A Stranger in the Meadow",
-      "text": "A tall man in a very muddy cloak strolls out of the trees with a longbow. \"Rook Ashgrove, adventurer. That sword's mine. Well, it's mine now. Well, it's nobody's. Need a hand?\" (The player who had Vex now plays Rook.)",
+      "title": "On the Hill Road",
+      "text": "You head up the road to Millstone Hill. Rook strolls beside you, bow on his shoulder, eating an apple nobody remembers buying. The sword in Bran's pack hums a sad little tune.",
       "options": [
         {
-          "label": "Talk: welcome Rook to the party",
-          "roll": null,
+          "label": "Talk: ask Rook what he's really after",
+          "roll": {
+            "skill": "insight",
+            "dc": 10
+          },
           "success": {
-            "text": "Rook shakes hands with everyone and returns Bran's coin purse, which nobody saw him take.",
+            "text": "\"Treasure, mostly. Also a fun time.\" Honest, at least. He returns Bran's coin purse, which nobody saw him take.",
             "next_scene_id": "demon_appears",
             "effects": []
           },
           "fail": {
-            "text": "Rook shakes hands with everyone and returns Bran's coin purse, which nobody saw him take.",
+            "text": "Rook winks. You learn nothing. Bran's coin purse is missing for a bit.",
             "next_scene_id": "demon_appears",
             "effects": []
           }
@@ -623,28 +311,41 @@
           }
         },
         {
-          "label": "Clever: ask what he's really after",
+          "label": "Clever: unwrap the giggling sword and study it",
           "roll": {
-            "skill": "insight",
+            "skill": "arcana",
             "dc": 10
           },
           "success": {
-            "text": "\"Treasure, mostly. Also a fun time.\" Honest, at least.",
+            "text": "It's a demon sword, and it's homesick. It hums louder.",
             "next_scene_id": "demon_appears",
-            "effects": []
+            "effects": [
+              {
+                "type": "flag",
+                "key": "sword_read",
+                "value": true
+              }
+            ]
           },
           "fail": {
-            "text": "Rook winks. You learn nothing.",
+            "text": "It hums at you, rudely. You wrap it back up.",
             "next_scene_id": "demon_appears",
             "effects": []
           }
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "flag",
+          "key": "demon_sword",
+          "value": true
         }
       ]
     },
     {
       "id": "demon_appears",
       "title": "Grubnax",
-      "text": "With a pop and a puff of smoke, a red demon the size of a teapot appears on the sword. \"I am GRUBNAX, Terror of the Ninth Pit! That's MY sword and I want to GO HOME!\" He stomps his tiny hoof.",
+      "text": "With a pop and a puff of smoke, a red demon the size of a teapot pops out of Bran's pack and lands on the sword. \"I am GRUBNAX, Terror of the Ninth Pit! That's MY sword and I want to GO HOME!\" He stomps his tiny hoof.",
       "options": [
         {
           "label": "Talk: offer to help him get home",
@@ -1123,15 +824,15 @@
           }
         },
         {
-          "label": "Talk: thank the cow on the way",
+          "label": "Talk: raise a toast to absent friends",
           "roll": null,
           "success": {
-            "text": "A different cow. She doesn't care. To the mine!",
+            "text": "Bran raises his porridge spoon: \"To Vex. He died doing what he loved: lying in daisies.\" To the mine!",
             "next_scene_id": "mine_gate",
             "effects": []
           },
           "fail": {
-            "text": "A different cow. She doesn't care. To the mine!",
+            "text": "Bran raises his porridge spoon: \"To Vex. He died doing what he loved: lying in daisies.\" To the mine!",
             "next_scene_id": "mine_gate",
             "effects": []
           }
@@ -1837,7 +1538,7 @@
         "level_up": {
           "Fighter": "20 HP; once per session take two actions on one turn",
           "Cleric": "21 HP; Heal goes up to 4 uses",
-          "Rogue": "17 HP; every turn, hide or dash for free"
+          "Ranger": "20 HP; your trick adds 2d6 instead of 1d6"
         }
       },
       "wrap_up_prompt": "What does your hero do at the festival?"
